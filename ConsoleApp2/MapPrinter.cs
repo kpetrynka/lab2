@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace ConsoleApp3
 {
     using System;
@@ -28,7 +30,11 @@ namespace ConsoleApp3
                     {
                         Console.Write("B");
                     }
-                    else
+                    else if (path.Contains(new Point()))
+                    {
+                        Console.Write(".");
+                    }
+                    else 
                     {
                         Console.Write(maze[column, row]);  
                     }
