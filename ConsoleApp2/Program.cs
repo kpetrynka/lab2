@@ -11,7 +11,8 @@ var map = generator.Generate();
 var start = new Point(43, 12); 
 var target = new Point(26, 27);
 
-
+// origins the way of getting to the point
+// distance - the distance
 List<Point> path = new List<Point> {start, target};
 
 var open = new List<Point>();
