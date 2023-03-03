@@ -13,58 +13,48 @@ var target = new Point(26, 27);
 
 // origins the way of getting to the point
 // distance - the distance
-List<Point> path = new List<Point> {start, target};
+new MapPrinter().Print(map, GetShortestPath(map, start, target ));
+ 
 
-var open = new List<Point>();
-var closed = new List<Point>();
-
-
-open.Add(start);
-
-while (open.Count > 0)
+List<Point> GetShortestPath(string[,] maze, Point starter, Point goal)
 {
+    var path = new List<Point> {starter, goal}; 
+    var open = new List<Point>();
+    var closed = new List<Point>();
     
-    // Sort the open list by f-cost and select the first (i.e., lowest f-cost) point
-	// The whole algorithm not the Dijkstra's 
-    var current = open.MinBy(p => FCost(p, start, target));
-    Console.WriteLine(FCost(current, start, target));
+    open.Add(starter);
     
-    
-    if (current.Equals(target))
+    while (open.Count > 0)
     {
-        Console.WriteLine("Path found!");
-        break;
-    }
-    
-    // Move the current point from the open list to the closed list
-    open.Remove(current);
-    closed.Add(current);
-    
-    
-
-    
-    
-
-    var neighbours = GetNeighbours(current.Column, current.Row, map);
-    Console.WriteLine(neighbours.Count);
-    foreach (var neighbour in neighbours)
-    {
+        // Sort the open list by f-cost and select the first (i.e., lowest f-cost) point
+    	// The whole algorithm not the Dijkstra's 
+        var current = open.MinBy(p => FCost(p, start, target));
+        Console.WriteLine(FCost(current, start, target));
         
-
-        if (!closed.Contains(neighbour))
+        
+        if (current.Equals(goal))
         {
-            open.Add(neighbour);
-            map[neighbour.Column, neighbour.Row] = ".";
+            Console.WriteLine("Path found!");
+            break;
         }
+        
+        // Move the current point from the open list to the closed list
+        open.Remove(current);
+        closed.Add(current);
 
-
+        var neighbours = GetNeighbours(current.Column, current.Row, maze);
+        Console.WriteLine(neighbours.Count);
+        foreach (var neighbour in neighbours)
+        {
+            if (!closed.Contains(neighbour))
+            {
+                open.Add(neighbour);
+                maze[neighbour.Column, neighbour.Row] = ".";
+            }
+        }
     }
-    
-    new MapPrinter().Print(map, path);
+    return path;
 }
-
-
-
 
 
 List<Point> GetNeighbours(int column, int row, string[,] map)
@@ -72,8 +62,7 @@ List<Point> GetNeighbours(int column, int row, string[,] map)
     var neighbours = new List<Point>();
         
     bool IsTraversable(Point point) => CheckPosition(point, map) == " ";
-        
-        
+
     var topNeighbour = new Point(column, row - 1);
     if (IsTraversable(topNeighbour))
     {
