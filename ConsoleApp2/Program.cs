@@ -62,7 +62,6 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
             break;
         }
     }
-    // basically we need to remove all extra points on 
     path.Add(begin);
     return path;
 }
@@ -115,17 +114,6 @@ string CheckPosition(Point point, string[,] map)
     if (leftBorder || rightBorder || topBorder || bottomBorder) return "";
 
     return map[point.Column, point.Row];
-}
-
-// Check if cell is walkable
-bool IsTraversable(Point point, string[,] map)
-{
-    if (map[point.Row, point.Column] != MapGenerator.Wall)
-    {
-        return true;
-    }
-
-    return false;
 }
 
 
