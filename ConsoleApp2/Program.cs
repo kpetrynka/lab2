@@ -12,31 +12,28 @@ var map = generator.Generate();
 var start = new Point(43, 12);
 var target = new Point(26, 27);
 
-var path = new List<Point> {start, target};
+var dots = new List<Point> {start, target};
 
 var open = new List<Point>();
 var closed = new List<Point>();
 
-new MapPrinter().Print(map, path);
+new MapPrinter().Print(map, dots);
 
-path.Remove(target);
 
 List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
 {
+    var origin = new Dictionary<Point, Point>();
     open.Add(begin);
     while (open.Count > 0)
     {
-        
         // Sort the open list by f-cost and select the first (i.e., lowest f-cost) point
         var current = open.MinBy(p => FCost(p, begin, goal));
-      
         
         if (current.Equals(goal))
         {
             Console.WriteLine("Path found!");
             break;
         }
-        
         // Move the current point from the open list to the closed list
         open.Remove(current);
         closed.Add(current);
@@ -46,13 +43,27 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
         {
             if (!closed.Contains(neighbour))
             {
-                path.Add(neighbour);
+                origin.Add(neighbour,current);
                 open.Add(neighbour);
-                
             }
         }
     }
-
+    var path = new List<Point> { goal };
+    var last = origin[goal];
+    while (true)
+    {
+        if (origin.ContainsKey(last))
+        {
+            path.Add(last);
+            last = origin[last];
+        }
+        else
+        {
+            break;
+        }
+    }
+    // basically we need to remove all extra points on 
+    path.Add(begin);
     return path;
 }
 

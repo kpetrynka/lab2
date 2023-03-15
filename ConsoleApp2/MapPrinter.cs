@@ -8,8 +8,8 @@ public class MapPrinter
     {
         PrintTopLine();
             
-        var startPoint = path[0];
-        var endPoint = path[^1];
+        var startPoint = path[^1];
+        var endPoint = path[0];
             
         for (var row = 0; row < maze.GetLength(1); row++)
         {
@@ -27,7 +27,7 @@ public class MapPrinter
                 {
                     Console.Write("B");
                 }
-                else if (path.Contains(new Point()))
+                else if (path.Contains(currentPoint))
                 {
                     Console.Write(".");
                 }
@@ -37,7 +37,6 @@ public class MapPrinter
                 }
                     
             }
-
             Console.WriteLine();
         }
 
