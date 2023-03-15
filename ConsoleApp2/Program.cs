@@ -69,7 +69,15 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
     return path;
 }
 
-new MapPrinter().Print(map, GetShortestPath(map, start, target));
+int TrafficTime (List<Point> path)
+{
+    return path.Sum(_ => 60 - (1 - 1) * 6);
+}
+
+    
+
+//new MapPrinter().Print(map, GetShortestPath(map, start, target));
+Console.WriteLine(TrafficTime(GetShortestPath(map, start, target)));
 
 List<Point> GetNeighbours(int column, int row, string[,] map)
 {
