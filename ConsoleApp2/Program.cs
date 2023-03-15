@@ -1,4 +1,5 @@
-﻿using ConsoleApp3;
+﻿using ConsoleApp2;
+using ConsoleApp3;
 
 
 var generator = new MapGenerator(new MapGeneratorOptions()
@@ -8,30 +9,27 @@ var generator = new MapGenerator(new MapGeneratorOptions()
 });
 
 var map = generator.Generate();
-var start = new Point(43, 12); 
+var start = new Point(43, 12);
 var target = new Point(26, 27);
-var dots = new List<Point> {start, target};
-// origins the way of getting to the point
-// distance - the distance
-// new MapPrinter().Print(map, GetShortestPath(map, start, target ));
-new MapPrinter().Print(map, dots);
 
+var path = new List<Point> {start, target};
 
-List<Point> GetShortestPath(string[,] maze, Point starter, Point goal)
+var open = new List<Point>();
+var closed = new List<Point>();
+
+new MapPrinter().Print(map, path);
+
+path.Remove(target);
+
+List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
 {
-    var path = new List<Point> {starter}; 
-    var open = new List<Point>();
-    var closed = new List<Point>();
-    
-    open.Add(starter);
-    
+    open.Add(begin);
     while (open.Count > 0)
     {
-        // Sort the open list by f-cost and select the first (i.e., lowest f-cost) point
-        var current = open.MinBy(p => FCost(p, start, target));
-        path.Add(current);
-        // Console.WriteLine(FCost(current, start, target));
         
+        // Sort the open list by f-cost and select the first (i.e., lowest f-cost) point
+        var current = open.MinBy(p => FCost(p, begin, goal));
+      
         
         if (current.Equals(goal))
         {
@@ -42,28 +40,31 @@ List<Point> GetShortestPath(string[,] maze, Point starter, Point goal)
         // Move the current point from the open list to the closed list
         open.Remove(current);
         closed.Add(current);
-
-        var neighbours = GetNeighbours(current.Column, current.Row, maze);
-        // Console.WriteLine(neighbours.Count);
-        foreach (var neighbour in neighbours)
+    
+        var neighbours = GetNeighbours(current.Column, current.Row, map);
+        foreach (var neighbour in neighbours) 
         {
             if (!closed.Contains(neighbour))
             {
+                path.Add(neighbour);
                 open.Add(neighbour);
-                // maze[neighbour.Column, neighbour.Row] = ".";
+                
             }
         }
     }
+
     return path;
 }
 
+new MapPrinter().Print(map, GetShortestPath(map, start, target));
 
 List<Point> GetNeighbours(int column, int row, string[,] map)
 {
     var neighbours = new List<Point>();
         
     bool IsTraversable(Point point) => CheckPosition(point, map) == " ";
-
+        
+        
     var topNeighbour = new Point(column, row - 1);
     if (IsTraversable(topNeighbour))
     {
@@ -106,38 +107,43 @@ string CheckPosition(Point point, string[,] map)
 }
 
 // Check if cell is walkable
-bool IsTraversable(Point point, string[,] maze)
-{ 
-    return maze[point.Row, point.Column] != MapGenerator.Wall;
+bool IsTraversable(Point point, string[,] map)
+{
+    if (map[point.Row, point.Column] != MapGenerator.Wall)
+    {
+        return true;
+    }
+
+    return false;
 }
 
 
-double HCost(Point current, Point final)
+double HCost(Point current, Point target)
 {
     // The distance from the current point to the target one (B)
-    int dx = final.Column - current.Column;
-    int dy = final.Row - current.Row;
+    int dx = target.Column - current.Column;
+    int dy = target.Row - current.Row;
     double distance = Math.Sqrt(dx*dx + dy*dy);
    
     return distance;
 
 }
 
-double GCost(Point begin, Point current)
+double GCost(Point start, Point current)
 {
     
     // The distance from the starting point (A) to the current one
-    int dx = current.Column - begin.Column;
-    int dy = current.Row - begin.Row;
+    int dx = current.Column - start.Column;
+    int dy = current.Row - start.Row;
     double distance = Math.Sqrt(dx*dx + dy*dy);
 
     return distance;
 }
 
-double FCost(Point current, Point begin, Point final)
+double FCost(Point current, Point start, Point target)
 {
-    double gCost = GCost(begin, current);
-    double hCost = HCost(current, final);
+    double gCost = GCost(start, current);
+    double hCost = HCost(current, target);
     double fCost = gCost + hCost;
 
     return fCost;

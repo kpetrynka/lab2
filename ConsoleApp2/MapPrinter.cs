@@ -1,68 +1,64 @@
-using System.ComponentModel;
+using ConsoleApp3;
 
-namespace ConsoleApp3
+namespace ConsoleApp2;
+
+public class MapPrinter
 {
-    using System;
-    using System.Collections.Generic;
-
-    public class MapPrinter
+    public void Print(string[,] maze, List<Point> path)
     {
-        public void Print(string[,] maze, List<Point> path)
+        PrintTopLine();
+            
+        var startPoint = path[0];
+        var endPoint = path[^1];
+            
+        for (var row = 0; row < maze.GetLength(1); row++)
         {
-            PrintTopLine();
-            
-            var startPoint = path[0];
-            var endPoint = path[-1];
-            
-            for (var row = 0; row < maze.GetLength(1); row++)
+            Console.Write($"{row}\t");
+            for (var column = 0; column < maze.GetLength(0); column++)
             {
-                Console.Write($"{row}\t");
-                for (var column = 0; column < maze.GetLength(0); column++)
+                    
+                var currentPoint = new Point(column, row);
+                if (currentPoint.Equals(startPoint))
                 {
-                    
-                    var currentPoint = new Point(column, row);
-                    if (currentPoint.Equals(startPoint))
-                    {
-                        Console.Write("A"); //check if it is wall or note
-                    }
-                    
-                    else if (currentPoint.Equals(endPoint))
-                    {
-                        Console.Write("B");
-                    }
-                    else if (path.Contains(new Point()))
-                    {
-                        Console.Write(".");
-                    }
-                    else 
-                    {
-                        Console.Write(maze[column, row]);  
-                    }
-                    
+                    Console.Write("A"); //check if it is wall or note
                 }
-
-                Console.WriteLine();
+                    
+                else if (currentPoint.Equals(endPoint))
+                {
+                    Console.Write("B");
+                }
+                else if (path.Contains(new Point()))
+                {
+                    Console.Write(".");
+                }
+                else 
+                {
+                    Console.Write(maze[column, row]);  
+                }
+                    
             }
 
-
-            void PrintTopLine()
-            {
-                Console.Write($" \t");
-                for (int i = 0; i < maze.GetLength(0); i++)
-                {
-                    Console.Write(i % 10 == 0? i / 10 : " ");
-                }
-    
-                Console.Write($"\n \t");
-                for (int i = 0; i < maze.GetLength(0); i++)
-                {
-                    Console.Write(i % 10);
-                }
-    
-                Console.WriteLine("\n");
-            }
-
-
+            Console.WriteLine();
         }
+
+
+        void PrintTopLine()
+        {
+            Console.Write($" \t");
+            for (int i = 0; i < maze.GetLength(0); i++)
+            {
+                Console.Write(i % 10 == 0? i / 10 : " ");
+            }
+    
+            Console.Write($"\n \t");
+            for (int i = 0; i < maze.GetLength(0); i++)
+            {
+                Console.Write(i % 10);
+            }
+    
+            Console.WriteLine("\n");
+        }
+
+
     }
 }
