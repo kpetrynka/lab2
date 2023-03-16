@@ -1,10 +1,13 @@
 ﻿using System.Data;
 using ConsoleApp1;
 
-DataTable Results = new DataTable();
+DataTable results = new DataTable();
+results.Columns.Add("visited", typeof(int)); ;
+results.Columns.Add("distance", typeof(int)); ;
+
 var i = 0;
 
-while (i > 30)
+while (i < 10)
 {
     var generator = new MapGenerator(new MapGeneratorOptions()
     {
@@ -15,17 +18,14 @@ while (i > 30)
     var map = generator.Generate();
     var start = new Point(43, 12);
     var target = new Point(26, 27);
-
-    // var dots = new List<Point> {start, target};
-
     var open = new List<Point>();
     var closed = new List<Point>();
     var distance = new Dictionary<Point, double> { { start, 0 } };
 
     var shortestPath = GetShortestPath(map, start, target);
-    new MapPrinter().Print(map, shortestPath);
-    Console.WriteLine($"Opened: {closed.Count}, Distance {distance[target]}");
-
+    results.Rows.Add(closed.Count, distance[target]); ;
+    i += 1;
+    
     List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
     {
         var origin = new Dictionary<Point, Point>();
@@ -39,7 +39,6 @@ while (i > 30)
             if (current.Equals(goal))
             {
                 distance[current] = distance[origin[current]] + 1;
-                Console.WriteLine("Path found!");
                 break;
             }
 
@@ -77,54 +76,54 @@ while (i > 30)
         path.Add(begin);
         return path;
     }
+}
+
+Console.Write(results);
+
+List<Point> GetNeighbours(int column, int row, string[,] mazeMap)
+{
+    var neighbours = new List<Point>();
+
+    bool IsTraversable(Point point) => CheckPosition(point, mazeMap) != "";
 
 
-    List<Point> GetNeighbours(int column, int row, string[,] mazeMap)
+    var topNeighbour = new Point(column, row - 1);
+    if (IsTraversable(topNeighbour))
     {
-        var neighbours = new List<Point>();
-
-        bool IsTraversable(Point point) => CheckPosition(point, mazeMap) != "";
-
-
-        var topNeighbour = new Point(column, row - 1);
-        if (IsTraversable(topNeighbour))
-        {
-            neighbours.Add(topNeighbour);
-        }
-
-        var bottomNeighbour = new Point(column, row + 1);
-        if (IsTraversable(bottomNeighbour))
-        {
-            neighbours.Add(bottomNeighbour);
-        }
-
-        var leftNeighbour = new Point(column - 1, row);
-        if (IsTraversable(leftNeighbour))
-        {
-            neighbours.Add(leftNeighbour);
-        }
-
-        var rightNeighbour = new Point(column + 1, row);
-        if (IsTraversable(rightNeighbour))
-        {
-            neighbours.Add(rightNeighbour);
-        }
-
-        return neighbours;
+        neighbours.Add(topNeighbour);
     }
 
-
-    string CheckPosition(Point point, string[,] mazeMap)
+    var bottomNeighbour = new Point(column, row + 1);
+    if (IsTraversable(bottomNeighbour))
     {
-        var leftBorder = point.Column < 0;
-        var rightBorder = point.Column >= mazeMap.GetLength(0);
-        var topBorder = point.Row < 0;
-        var bottomBorder = point.Row >= mazeMap.GetLength(1);
-
-        // TODO: catch exception
-        if (leftBorder || rightBorder || topBorder || bottomBorder ||
-            mazeMap[point.Column, point.Row] == "█") return "";
-
-        return mazeMap[point.Column, point.Row];
+        neighbours.Add(bottomNeighbour);
     }
+
+    var leftNeighbour = new Point(column - 1, row);
+    if (IsTraversable(leftNeighbour))
+    {
+        neighbours.Add(leftNeighbour);
+    }
+
+    var rightNeighbour = new Point(column + 1, row);
+    if (IsTraversable(rightNeighbour))
+    {
+        neighbours.Add(rightNeighbour);
+    }
+
+    return neighbours;
+}
+
+
+string CheckPosition(Point point, string[,] mazeMap)
+{
+    var leftBorder = point.Column < 0;
+    var rightBorder = point.Column >= mazeMap.GetLength(0);
+    var topBorder = point.Row < 0;
+    var bottomBorder = point.Row >= mazeMap.GetLength(1);
+
+    if (leftBorder || rightBorder || topBorder || bottomBorder ||
+        mazeMap[point.Column, point.Row] == "█") return "";
+
+    return mazeMap[point.Column, point.Row];
 }
