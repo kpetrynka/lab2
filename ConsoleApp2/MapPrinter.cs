@@ -1,5 +1,3 @@
-using ConsoleApp3;
-
 namespace ConsoleApp2;
 
 public class MapPrinter
@@ -8,8 +6,8 @@ public class MapPrinter
     {
         PrintTopLine();
             
-        var startPoint = path[0];
-        var endPoint = path[^1];
+        var startPoint = path[^1];
+        var endPoint = path[0];
             
         for (var row = 0; row < maze.GetLength(1); row++)
         {

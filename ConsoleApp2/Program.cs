@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks.Sources;
 using ConsoleApp2;
-using ConsoleApp3;
 
 
 var generator = new MapGenerator(new MapGeneratorOptions()
@@ -17,14 +16,16 @@ var map = generator.Generate();
 var start = new Point(43, 12);
 var target = new Point(26, 27);
 
-var dots = new List<Point> {start, target};
+// var dots = new List<Point> {start, target};
 
 var open = new List<Point>();
 var closed = new List<Point>();
-
-new MapPrinter().Print(map, dots);
-
 var distance = new Dictionary<Point, double>();
+
+var shortestPath = GetShortestPath(map, start, target);
+new MapPrinter().Print(map, shortestPath);
+Console.WriteLine($"Time with traffic: {TrafficTime(shortestPath, map)}"); 
+
 
 List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
 {
@@ -70,7 +71,7 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
             break;
         }
     }
-    path.Add(begin);
+    // path.Add(begin);
     return path;
 }
 
@@ -79,23 +80,27 @@ double TrafficTime (List<Point> path, string[,] maze)
     double score = 0;
     foreach (var point in path)
     {
-        var n = int.Parse(maze[point.Column, point.Column]);// why wall is in path
-        var dist = distance[point];
-        score += dist/60 - (n - 1) * 6;
+        if (maze[point.Column, point.Row] != "█")
+        { 
+            var n = int.Parse(maze[point.Column, point.Row]);
+            var dist = distance[point];
+            score += dist/(60 - (n - 1) * 6);  
+        }
+        else
+        {
+            score += 0;
+        }
     }
-
     return score;
 }
 
-Console.WriteLine(GetShortestPath(map, start, target));
-// new MapPrinter().Print(map, GetShortestPath(map, start, target));
-// Console.WriteLine(TrafficTime(GetShortestPath(map, start, target),map));
 
-List<Point> GetNeighbours(int column, int row, string[,] map)
+
+List<Point> GetNeighbours(int column, int row, string[,] mazeMap)
 {
     var neighbours = new List<Point>();
         
-    bool IsTraversable(Point point) => CheckPosition(point, map) != "█";
+    bool IsTraversable(Point point) => CheckPosition(point, mazeMap) != "";
         
         
     var topNeighbour = new Point(column, row - 1);
@@ -126,46 +131,46 @@ List<Point> GetNeighbours(int column, int row, string[,] map)
 }
 
 
-string CheckPosition(Point point, string[,] map)
+string CheckPosition(Point point, string[,] mazeMap)
 {
     var leftBorder = point.Column < 0;
-    var rightBorder = point.Column >= map.GetLength(0);
+    var rightBorder = point.Column >= mazeMap.GetLength(0);
     var topBorder = point.Row < 0;
-    var bottomBorder = point.Row >= map.GetLength(1);
+    var bottomBorder = point.Row >= mazeMap.GetLength(1);
         
     // TODO: catch exception
-    if (leftBorder || rightBorder || topBorder || bottomBorder) return "";
+    if (leftBorder || rightBorder || topBorder || bottomBorder || mazeMap[point.Column, point.Row] == "█") return "";
 
-    return map[point.Column, point.Row];
+    return mazeMap[point.Column, point.Row];
 }
 
 
-double HCost(Point current, Point target)
+double HCost(Point current, Point final)
 {
     // The distance from the current point to the target one (B)
-    int dx = target.Column - current.Column;
-    int dy = target.Row - current.Row;
-    double distance = Math.Sqrt(dx*dx + dy*dy);
+    int dx = final.Column - current.Column;
+    int dy = final.Row - current.Row;
+    double cost = Math.Sqrt(dx*dx + dy*dy);
    
-    return distance;
+    return cost;
 
 }
 
-double GCost(Point start, Point current)
+double GCost(Point begin, Point current)
 {
     
     // The distance from the starting point (A) to the current one
-    int dx = current.Column - start.Column;
-    int dy = current.Row - start.Row;
-    double distance = Math.Sqrt(dx*dx + dy*dy);
+    int dx = current.Column - begin.Column;
+    int dy = current.Row - begin.Row;
+    double cost = Math.Sqrt(dx*dx + dy*dy);
 
-    return distance;
+    return cost;
 }
 
-double FCost(Point current, Point start, Point target)
+double FCost(Point current, Point begin, Point final)
 {
-    double gCost = GCost(start, current);
-    double hCost = HCost(current, target);
+    double gCost = GCost(begin, current);
+    double hCost = HCost(current, final);
     double fCost = gCost + hCost;
 
     return fCost;

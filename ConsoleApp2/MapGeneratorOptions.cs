@@ -1,6 +1,6 @@
 
 
-namespace ConsoleApp3
+namespace ConsoleApp2
 {
     public class MapGeneratorOptions
     {

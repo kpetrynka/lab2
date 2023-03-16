@@ -1,9 +1,6 @@
-namespace ConsoleApp3
+namespace ConsoleApp2
 
 {
-    using System;
-    using System.Collections.Generic;
-
     public class MapGenerator
     {
         public const string Wall = "█";
