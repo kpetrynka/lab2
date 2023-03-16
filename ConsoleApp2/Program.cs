@@ -1,4 +1,6 @@
-﻿using ConsoleApp2;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks.Sources;
+using ConsoleApp2;
 using ConsoleApp3;
 
 
@@ -41,12 +43,12 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
         open.Remove(current);
         closed.Add(current);
     
-        var neighbours = GetNeighbours(current.Column, current.Row, map);
+        var neighbours = GetNeighbours(current.Column, current.Row, map); // why it is null??
         foreach (var neighbour in neighbours) 
         {
             if (!closed.Contains(neighbour))
             {
-                origin.Add(neighbour,current);
+                origin[neighbour] = closed[^1];
                 open.Add(neighbour);
             }
         }
@@ -69,21 +71,27 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
     return path;
 }
 
-int TrafficTime (List<Point> path)
+int TrafficTime (List<Point> path, string[,] maze)
 {
-    return path.Sum(_ => 60 - (1 - 1) * 6);
+    var score = 0;
+    foreach (var point in path)
+    {
+        var n = int.Parse(maze[point.Column, point.Column]);
+        score += 1 / 60 - (n - 1) * 6;;;
+    }
+
+    return score;
 }
 
-    
 
-//new MapPrinter().Print(map, GetShortestPath(map, start, target));
-Console.WriteLine(TrafficTime(GetShortestPath(map, start, target)));
+// new MapPrinter().Print(map, GetShortestPath(map, start, target));
+Console.WriteLine(TrafficTime(GetShortestPath(map, start, target),map));
 
 List<Point> GetNeighbours(int column, int row, string[,] map)
 {
     var neighbours = new List<Point>();
         
-    bool IsTraversable(Point point) => CheckPosition(point, map) == " ";
+    bool IsTraversable(Point point) => CheckPosition(point, map) != "█";
         
         
     var topNeighbour = new Point(column, row - 1);

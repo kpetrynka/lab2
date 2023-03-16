@@ -8,8 +8,8 @@ public class MapPrinter
     {
         PrintTopLine();
             
-        var startPoint = path[^1];
-        var endPoint = path[0];
+        var startPoint = path[0];
+        var endPoint = path[^1];
             
         for (var row = 0; row < maze.GetLength(1); row++)
         {
