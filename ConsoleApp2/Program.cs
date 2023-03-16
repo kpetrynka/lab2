@@ -43,7 +43,7 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
         open.Remove(current);
         closed.Add(current);
     
-        var neighbours = GetNeighbours(current.Column, current.Row, map); // why it is null??
+        var neighbours = GetNeighbours(current.Column, current.Row, map); 
         foreach (var neighbour in neighbours) 
         {
             if (!closed.Contains(neighbour))
@@ -53,7 +53,7 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
             }
         }
     }
-    var path = new List<Point> { goal };
+    var path = new List<Point> { goal }; // change the start and goal
     var last = origin[goal];
     while (true)
     {
@@ -71,13 +71,13 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
     return path;
 }
 
-int TrafficTime (List<Point> path, string[,] maze)
+float TrafficTime (List<Point> path, string[,] maze)
 {
-    var score = 0;
+    float score = 0;
     foreach (var point in path)
     {
-        var n = int.Parse(maze[point.Column, point.Column]);
-        score += 1 / 60 - (n - 1) * 6;;;
+        var n = int.Parse(maze[point.Column, point.Column]); 
+        score += 60 - (n - 1) * 6;;;// what is actually the distance
     }
 
     return score;
