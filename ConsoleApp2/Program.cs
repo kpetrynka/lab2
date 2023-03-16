@@ -24,15 +24,18 @@ var closed = new List<Point>();
 
 new MapPrinter().Print(map, dots);
 
+var distance = new Dictionary<Point, double>();
 
 List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
 {
     var origin = new Dictionary<Point, Point>();
+
     open.Add(begin);
     while (open.Count > 0)
     {
         // Sort the open list by f-cost and select the first (i.e., lowest f-cost) point
-        var current = open.MinBy(p => FCost(p, begin, goal));
+        var current = open.MinBy(p => FCost(p, begin, goal)); 
+        distance[current] = FCost(current, begin, goal);
         
         if (current.Equals(goal))
         {
@@ -71,21 +74,22 @@ List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
     return path;
 }
 
-float TrafficTime (List<Point> path, string[,] maze)
+double TrafficTime (List<Point> path, string[,] maze)
 {
-    float score = 0;
+    double score = 0;
     foreach (var point in path)
     {
-        var n = int.Parse(maze[point.Column, point.Column]); 
-        score += 60 - (n - 1) * 6;;;// what is actually the distance
+        var n = int.Parse(maze[point.Column, point.Column]);// why wall is in path
+        var dist = distance[point];
+        score += dist/60 - (n - 1) * 6;
     }
 
     return score;
 }
 
-
+Console.WriteLine(GetShortestPath(map, start, target));
 // new MapPrinter().Print(map, GetShortestPath(map, start, target));
-Console.WriteLine(TrafficTime(GetShortestPath(map, start, target),map));
+// Console.WriteLine(TrafficTime(GetShortestPath(map, start, target),map));
 
 List<Point> GetNeighbours(int column, int row, string[,] map)
 {
