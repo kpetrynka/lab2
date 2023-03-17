@@ -8,19 +8,19 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\KHRYSTYNA\\.nuget\\packages\\": {}
+    "/Users/danielshulevskiy/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\KHRYSTYNA\\RiderProjects\\ConsoleApp2\\ConsoleApp2\\ConsoleApp2.csproj",
+      "projectUniqueName": "/Users/danielshulevskiy/RiderProjects/lab2/ConsoleApp2/ConsoleApp2.csproj",
       "projectName": "ConsoleApp2",
-      "projectPath": "C:\\Users\\KHRYSTYNA\\RiderProjects\\ConsoleApp2\\ConsoleApp2\\ConsoleApp2.csproj",
-      "packagesPath": "C:\\Users\\KHRYSTYNA\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\KHRYSTYNA\\RiderProjects\\ConsoleApp2\\ConsoleApp2\\obj\\",
+      "projectPath": "/Users/danielshulevskiy/RiderProjects/lab2/ConsoleApp2/ConsoleApp2.csproj",
+      "packagesPath": "/Users/danielshulevskiy/.nuget/packages/",
+      "outputPath": "/Users/danielshulevskiy/RiderProjects/lab2/ConsoleApp2/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\KHRYSTYNA\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/danielshulevskiy/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -59,7 +59,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files (x86)\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.102/RuntimeIdentifierGraph.json"
       }
     }
   }
