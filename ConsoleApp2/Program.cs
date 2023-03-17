@@ -4,8 +4,7 @@ using ConsoleApp2;
 
 
 
-
-static void AlgoGenerator(int i)
+static void AlgoGenerator(int i, List<Point> open, List<Point> closed, Dictionary<Point, double> distance)
 {
     
     var generator = new MapGenerator(new MapGeneratorOptions()
@@ -23,11 +22,7 @@ static void AlgoGenerator(int i)
     var target = new Point(26, 27);
 
     // var dots = new List<Point> {start, target};
-
-    var open = new List<Point>();
-    var closed = new List<Point>();
-    var distance = new Dictionary<Point, double>();
-
+    
     var shortestPath = GetShortestPath(map, start, target);
     new MapPrinter().Print(map, shortestPath);
     Console.WriteLine("REPRESENTATION OF A* ALGORITHM");
@@ -59,6 +54,7 @@ static void AlgoGenerator(int i)
             var neighbours = GetNeighbours(current.Column, current.Row, map);
             foreach (var neighbour in neighbours)
             {
+                
                 if (!closed.Contains(neighbour))
                 {
                     origin[neighbour] = closed[^1];
@@ -85,6 +81,8 @@ static void AlgoGenerator(int i)
         // path.Add(begin);
         return path;
     }
+    
+    
 
     double TrafficTime(List<Point> path, string[,] maze)
     {
@@ -94,7 +92,7 @@ static void AlgoGenerator(int i)
             if (maze[point.Column, point.Row] != "█")
             {
                 var n = int.Parse(maze[point.Column, point.Row]);
-                var dist = distance[point];
+                var dist = distance.ContainsKey(point) ? distance[point] : 0;
                 score += dist / (60 - (n - 1) * 6);
             }
             else
@@ -105,6 +103,9 @@ static void AlgoGenerator(int i)
 
         return score;
     }
+
+    
+    
 
     // Function that gets all the point from the path, returns its sum
 
@@ -121,6 +122,8 @@ static void AlgoGenerator(int i)
 
         return sumi;
     }
+    
+    
 
 
 
@@ -158,6 +161,8 @@ static void AlgoGenerator(int i)
 
         return neighbours;
     }
+    
+    
 
 
     string CheckPosition(Point point, string[,] mazeMap)
@@ -173,6 +178,10 @@ static void AlgoGenerator(int i)
 
         return mazeMap[point.Column, point.Row];
     }
+    
+
+    
+    
 
 
     double HCost(Point current, Point final)
@@ -205,10 +214,28 @@ static void AlgoGenerator(int i)
 
         return fCost;
     }
+    
+    
 }
 
-for (int i = 0; i < 30; i++)
+var open = new List<Point>();
+var closed = new List<Point>();
+var distance = new Dictionary<Point, double>();
+
+for (int i = 0; i < 100; i++)
 {
-    AlgoGenerator(i);
-}
+    // make an expeption for the algorithm if in given i there is an error
     
+    try
+    {
+        open.Clear();
+        closed.Clear();
+        distance.Clear();
+        AlgoGenerator(i, open, closed, distance);
+    }
+    catch (Exception e)
+    {
+        i = i + 1;
+    }
+}
+
