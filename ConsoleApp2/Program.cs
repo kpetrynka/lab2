@@ -4,10 +4,14 @@ using ConsoleApp2;
 
 
 
-static void AlgoGenerator(int i, List<Point> open, List<Point> closed, Dictionary<Point, double> distance)
+static AlgorithmResult AlgoGenerator(int i, bool useAStar, bool useA)
 {
     
-    var generator = new MapGenerator(new MapGeneratorOptions()
+    var open = new List<Point>();
+    var closed = new List<Point>();
+    var distance = new Dictionary<Point, double>();
+    
+    var generator = new MapGenerator(new MapGeneratorOptions
     {
         Height = 35,
         Width = 90,
@@ -24,10 +28,12 @@ static void AlgoGenerator(int i, List<Point> open, List<Point> closed, Dictionar
     // var dots = new List<Point> {start, target};
     
     var shortestPath = GetShortestPath(map, start, target);
-    new MapPrinter().Print(map, shortestPath);
-    Console.WriteLine("REPRESENTATION OF A* ALGORITHM");
+    //new MapPrinter().Print(map, shortestPath);
+    Console.WriteLine();
+    Console.WriteLine($"Algorithm: {(useAStar ? "A*" : "A")}");
     Console.WriteLine($"Time with traffic: {TrafficTime(shortestPath, map)}");
     Console.WriteLine($"Total count of cells: {Pathsum(shortestPath, map)}");
+    Console.WriteLine();
 
 
     List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
@@ -38,8 +44,9 @@ static void AlgoGenerator(int i, List<Point> open, List<Point> closed, Dictionar
         while (open.Count > 0)
         {
             // Sort the open list by f-cost and select the first (i.e., lowest f-cost) point
-            var current = open.MinBy(p => FCost(p, begin, goal));
-            distance[current] = FCost(current, begin, goal);
+            var current = open.MinBy(p => useAStar ? HCost(p, goal) : FCost(p, begin, goal));
+            distance[current] = useAStar ? HCost(current, goal) : FCost(current, begin, goal);
+
 
             if (current.Equals(goal))
             {
@@ -179,11 +186,7 @@ static void AlgoGenerator(int i, List<Point> open, List<Point> closed, Dictionar
         return mazeMap[point.Column, point.Row];
     }
     
-
     
-    
-
-
     double HCost(Point current, Point final)
     {
         // The distance from the current point to the target one (B)
@@ -215,23 +218,25 @@ static void AlgoGenerator(int i, List<Point> open, List<Point> closed, Dictionar
         return fCost;
     }
     
+    return new AlgorithmResult
+    {
+        Iteration = i + 1,
+        Algorithm = useAStar ? "A*" : "A",
+        Time = TrafficTime(shortestPath, map),
+        TotalCountOfCells = Pathsum(shortestPath, map)
+    };
     
 }
 
-var open = new List<Point>();
-var closed = new List<Point>();
-var distance = new Dictionary<Point, double>();
 
-for (int i = 0; i < 100; i++)
+var results = new List<AlgorithmResult>();
+
+for (int i = 0; i < 30; i++)
 {
-    // make an expeption for the algorithm if in given i there is an error
-    
     try
     {
-        open.Clear();
-        closed.Clear();
-        distance.Clear();
-        AlgoGenerator(i, open, closed, distance);
+        results.Add(AlgoGenerator(i, false, true));
+        results.Add(AlgoGenerator(i, true, false));
     }
     catch (Exception e)
     {
@@ -239,3 +244,33 @@ for (int i = 0; i < 100; i++)
     }
 }
 
+Console.WriteLine("Iteration | Algorithm | Time | Total Count of Cells");
+foreach (var result in results)
+{
+    Console.WriteLine($"{result.Iteration} | {result.Algorithm} | {result.Time} | {result.TotalCountOfCells}");
+}
+
+var groupedResults = results.GroupBy(r => r.Algorithm);
+
+foreach (var group in groupedResults)
+{
+    var algorithm = group.Key;
+    var timeList = group.Select(r => r.Time).ToList();
+    var cellList = group.Select(r => r.TotalCountOfCells).ToList();
+
+    double timeAverage = timeList.Average();
+    double cellAverage = cellList.Average();
+
+    double timeVariance = timeList.Select(t => (t - timeAverage) * (t - timeAverage)).Sum() / timeList.Count;
+    double cellVariance = cellList.Select(c => (c - cellAverage) * (c - cellAverage)).Sum() / cellList.Count;
+
+    double timeStandardError = Math.Sqrt(timeVariance) / Math.Sqrt(timeList.Count);
+    double cellStandardError = Math.Sqrt(cellVariance) / Math.Sqrt(cellList.Count);
+
+    Console.WriteLine($"Algorithm: {algorithm}");
+    Console.WriteLine($"Average Time: {timeAverage}");
+    Console.WriteLine($"Time Standard Error: {timeStandardError}");
+    Console.WriteLine($"Average Total Count of Cells: {cellAverage}");
+    Console.WriteLine($"Total Count of Cells Standard Error: {cellStandardError}");
+    Console.WriteLine();
+}
