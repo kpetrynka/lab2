@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks.Sources;
 using ConsoleApp2;
 
 
-for (int i = 0; i < 3; i++)
-{
-    Random random = new Random();
-    int randomSeed = random.Next();
 
+
+static void AlgoGenerator(int i)
+{
+    
     var generator = new MapGenerator(new MapGeneratorOptions()
     {
         Height = 35,
@@ -18,23 +15,24 @@ for (int i = 0; i < 3; i++)
         Noise = .1f,
         AddTraffic = true,
         TrafficSeed = 1234,
-        Seed = randomSeed
+        Seed = i
     });
 
     var map = generator.Generate();
     var start = new Point(43, 12);
     var target = new Point(26, 27);
-    
+
+    // var dots = new List<Point> {start, target};
+
     var open = new List<Point>();
     var closed = new List<Point>();
     var distance = new Dictionary<Point, double>();
 
     var shortestPath = GetShortestPath(map, start, target);
     new MapPrinter().Print(map, shortestPath);
+    Console.WriteLine("REPRESENTATION OF A* ALGORITHM");
     Console.WriteLine($"Time with traffic: {TrafficTime(shortestPath, map)}");
-    Console.WriteLine($"Iteration {i + 1} complete.");
-    Console.WriteLine();
-
+    Console.WriteLine($"Total count of cells: {Pathsum(shortestPath, map)}");
 
 
     List<Point> GetShortestPath(string[,] maze, Point begin, Point goal)
@@ -107,6 +105,23 @@ for (int i = 0; i < 3; i++)
 
         return score;
     }
+
+    // Function that gets all the point from the path, returns its sum
+
+    int Pathsum(List<Point> path, string[,] maze)
+    {
+        int sumi = 0;
+        foreach (var point in path)
+        {
+            if (maze[point.Column, point.Row] != "█")
+            {
+                sumi += 1;
+            }
+        }
+
+        return sumi;
+    }
+
 
 
 
@@ -191,3 +206,9 @@ for (int i = 0; i < 3; i++)
         return fCost;
     }
 }
+
+for (int i = 0; i < 30; i++)
+{
+    AlgoGenerator(i);
+}
+    
